@@ -201,7 +201,7 @@ committing.
 git commit -m "$(cat <<'EOF'
 docs: update project documentation for vX.Y.Z.W
 
-Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

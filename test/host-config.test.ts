@@ -489,7 +489,8 @@ describe('golden-file regression', () => {
 describe('host config correctness', () => {
   test('Codex defaults to generic GPT while all existing hosts retain Claude', () => {
     expect(codex.defaultModel).toBe('gpt');
-    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex')) {
+    expect(claude.defaultModel).toBe('fable-5');
+    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex' && h.name !== 'claude')) {
       expect(host.defaultModel).toBe('claude');
     }
   });
