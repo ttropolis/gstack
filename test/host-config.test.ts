@@ -516,7 +516,8 @@ describe('host config correctness', () => {
   test('Codex renders the GPT overlay, Antigravity the Gemini overlay, every other host the Claude overlay', () => {
     expect(codex.defaultModel).toBe('gpt');
     expect(agy.defaultModel).toBe('gemini');
-    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex' && h.name !== 'agy')) {
+    expect(claude.defaultModel).toBe('fable-5');
+    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex' && h.name !== 'agy' && h.name !== 'claude')) {
       expect(host.defaultModel).toBe('claude');
     }
   });
