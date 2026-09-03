@@ -5,7 +5,6 @@ const claude = defineHost({
   displayName: 'Claude Code',
   tier: 'full',
   capabilities: { toolExecution: true, questions: 'native', planMode: true, delegation: true, browser: true, safetyHooks: 'enforced' },
-  defaultModel: 'fable-5',
 
   usesEnvVars: false,  // primary host — literal ~ paths, no $GSTACK_ROOT env vars
 
