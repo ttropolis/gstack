@@ -8,7 +8,7 @@ for a result while keeping a fresh context. Do not invoke the target as a Skill
 or run it inline instead. Inline work is allowed only under that section's
 documented fallback, after a failed subagent has stopped.
 
-Dispatch the audit through Agent with `subagent_type: "general-purpose"` and
+Dispatch the audit through Agent with `subagent_type: "general-purpose"`, `model: "sonnet"` (mechanical summarization/checking) and
 `run_in_background: false`, using the shared foreground-dispatch rule above.
 Wait for its LAST-line JSON before applying the coverage gate.
 
