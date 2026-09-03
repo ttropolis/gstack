@@ -141,6 +141,7 @@ Past learnings: {learnings or 'none'}"
 
 **Subagent configuration:**
 - Use \`subagent_type: "general-purpose"\`
+- Use \`model: "sonnet"\` (mechanical specialist checklist pass)
 - Pass ${FOREGROUND_IF_AVAILABLE} on every specialist Agent call — background is the default since ${CC_BACKGROUND_DEFAULT_SINCE}; omitting an available flag is not foreground. ${BACKGROUND_RECOVERY}
 
 **Wait for readers before editing:**
@@ -288,7 +289,7 @@ function generateRedTeam(ctx: TemplateContext): string {
 
 **Activation:** Only if DIFF_LINES > 200 OR any specialist produced a CRITICAL finding.
 
-If activated, dispatch one more subagent via the Agent tool (pass ${FOREGROUND_IF_AVAILABLE} — foreground; subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}; ${BACKGROUND_RECOVERY})
+If activated, dispatch one more subagent via the Agent tool with \`model: "opus"\` (adversarial judgment) (pass ${FOREGROUND_IF_AVAILABLE} — foreground; subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}; ${BACKGROUND_RECOVERY})
 
 The Red Team subagent receives:
 1. The red-team checklist path \`${ctx.paths.skillRoot}/review/specialists/red-team.md\` (it reads the file)
