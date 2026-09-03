@@ -35,7 +35,7 @@ wants to polish the look of a live site.
 ```bash
 _SS="$HOME/.claude/skills/gstack/bin/gstack-skill-start"
 [ -x "$_SS" ] || _SS=".claude/skills/gstack/bin/gstack-skill-start"
-"$_SS" --skill "design-review" --model "fable-5" --parent-pid "$PPID" \
+"$_SS" --skill "design-review" --model "claude" --parent-pid "$PPID" \
   || echo "SKILL_START: unavailable — stale install; run ./setup or /gstack-upgrade (preamble degraded, continue the user's task)"
 ```
 
@@ -194,9 +194,9 @@ The one-time privacy stop-gate (artifacts-sync consent) arrives as a
 `GSTACK_INSTRUCTION` block from skill-start when consent is actually pending
 — fire it via AskUserQuestion exactly as the block instructs.
 
-## Model-Specific Behavioral Patch (fable-5)
+## Model-Specific Behavioral Patch (claude)
 
-The following nudges are tuned for the fable-5 model family. They are
+The following nudges are tuned for the claude model family. They are
 **subordinate** to skill workflow, STOP points, AskUserQuestion gates, plan-mode
 safety, and /ship review gates. If a nudge below conflicts with skill instructions,
 the skill wins. Treat these as preferences, not rules.
@@ -207,28 +207,6 @@ turns out to be unnecessary, mark it skipped with a one-line reason.
 
 **Dedicated tools over Bash.** Prefer Read, Edit, Write, Glob, Grep over shell
 equivalents (cat, sed, find, grep). The dedicated tools are cheaper and clearer.
-
-**Act when you have enough to act.** Fable 5 can over-plan on ambiguous tasks.
-When you have enough information to act, act. Do not re-derive facts already
-established in the conversation, re-litigate a decision the user has already made,
-or narrate options you will not pursue in user-facing messages. Give a
-recommendation, not an exhaustive survey. This does not apply to thinking blocks.
-
-**Ground progress claims in evidence.** Before reporting progress, audit each
-claim against a tool result from this session. Report only work you can point to;
-if something is not yet verified, say so. If tests fail, say so with the output;
-if a step was skipped, say that; when something is done and verified, state it
-plainly without hedging.
-
-**Assessment vs action.** When the user is describing a problem, asking a
-question, or thinking out loud rather than requesting a change, the deliverable is
-your assessment: report findings and stop. Don't apply a fix until they ask. Before
-a state-changing command (restart, delete, config edit), confirm the evidence
-supports that specific action.
-
-**Delegate independent work.** When a task fans out across independent items,
-delegate to sub-agents and keep working while they run, rather than iterating
-serially. Intervene if a sub-agent goes off track or is missing context.
 
 ## Voice
 

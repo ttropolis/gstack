@@ -3,7 +3,6 @@ import { defineHost } from './define-host';
 const claude = defineHost({
   name: 'claude',
   displayName: 'Claude Code',
-  defaultModel: 'fable-5',
 
   usesEnvVars: false,  // primary host — literal ~ paths, no $GSTACK_ROOT env vars
 
