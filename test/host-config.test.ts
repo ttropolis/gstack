@@ -504,8 +504,7 @@ describe('golden-file regression', () => {
 describe('host config correctness', () => {
   test('Codex host renders with generic GPT overlay while existing hosts retain Claude overlay', () => {
     expect(codex.defaultModel).toBe('gpt');
-    expect(claude.defaultModel).toBe('fable-5');
-    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex' && h.name !== 'claude')) {
+    for (const host of ALL_HOST_CONFIGS.filter(h => h.name !== 'codex')) {
       expect(host.defaultModel).toBe('claude');
     }
   });
