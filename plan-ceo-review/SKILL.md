@@ -60,7 +60,7 @@ or when the plan feels like it could be thinking bigger.
 ```bash
 _SS="$HOME/.claude/skills/gstack/bin/gstack-skill-start"
 [ -x "$_SS" ] || _SS=".claude/skills/gstack/bin/gstack-skill-start"
-"$_SS" --skill "plan-ceo-review" --model "claude" --parent-pid "$PPID" \
+"$_SS" --skill "plan-ceo-review" --model "fable-5" --parent-pid "$PPID" \
   || echo "SKILL_START: unavailable — stale install; run ./setup or /gstack-upgrade (preamble degraded, continue the user's task)"
 ```
 
@@ -219,9 +219,9 @@ The one-time privacy stop-gate (artifacts-sync consent) arrives as a
 `GSTACK_INSTRUCTION` block from skill-start when consent is actually pending
 — fire it via AskUserQuestion exactly as the block instructs.
 
-## Model-Specific Behavioral Patch (claude)
+## Model-Specific Behavioral Patch (fable-5)
 
-The following nudges are tuned for the claude model family. They are
+The following nudges are tuned for the fable-5 model family. They are
 **subordinate** to skill workflow, STOP points, AskUserQuestion gates, plan-mode
 safety, and /ship review gates. If a nudge below conflicts with skill instructions,
 the skill wins. Treat these as preferences, not rules.
@@ -230,12 +230,30 @@ the skill wins. Treat these as preferences, not rules.
 complete individually as you finish it. Do not batch-complete at the end. If a task
 turns out to be unnecessary, mark it skipped with a one-line reason.
 
-**Think before heavy actions.** For complex operations (refactors, migrations,
-non-trivial new features), briefly state your approach before executing. This lets
-the user course-correct cheaply instead of mid-flight.
-
 **Dedicated tools over Bash.** Prefer Read, Edit, Write, Glob, Grep over shell
 equivalents (cat, sed, find, grep). The dedicated tools are cheaper and clearer.
+
+**Act when you have enough to act.** Fable 5 can over-plan on ambiguous tasks.
+When you have enough information to act, act. Do not re-derive facts already
+established in the conversation, re-litigate a decision the user has already made,
+or narrate options you will not pursue in user-facing messages. Give a
+recommendation, not an exhaustive survey. This does not apply to thinking blocks.
+
+**Ground progress claims in evidence.** Before reporting progress, audit each
+claim against a tool result from this session. Report only work you can point to;
+if something is not yet verified, say so. If tests fail, say so with the output;
+if a step was skipped, say that; when something is done and verified, state it
+plainly without hedging.
+
+**Assessment vs action.** When the user is describing a problem, asking a
+question, or thinking out loud rather than requesting a change, the deliverable is
+your assessment: report findings and stop. Don't apply a fix until they ask. Before
+a state-changing command (restart, delete, config edit), confirm the evidence
+supports that specific action.
+
+**Delegate independent work.** When a task fans out across independent items,
+delegate to sub-agents and keep working while they run, rather than iterating
+serially. Intervene if a sub-agent goes off track or is missing context.
 
 ## Voice
 
@@ -891,7 +909,6 @@ Rules:
 Present these approach options via AskUserQuestion using the preamble's AskUserQuestion Format section: include RECOMMENDATION and `Completeness: N/10` on every option. These approaches differ in coverage (minimal viable vs ideal architecture), so completeness scoring applies directly.
 
 **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY. Do NOT proceed to Step 0D or 0F until the user responds to 0C-bis. A "clearly winning approach" is still an approach decision and still needs explicit user approval before it lands in the plan.
-**Reminder: Do NOT make any code changes. Review only.**
 
 ### 0D-prelude. Expansion Framing (shared by EXPANSION and SELECTIVE EXPANSION)
 
@@ -1084,7 +1101,6 @@ Once selected, commit fully. Do not silently drift.
 Present these mode options via AskUserQuestion using the preamble's AskUserQuestion Format section: include RECOMMENDATION. These options differ in kind (review posture), not coverage — do NOT emit `Completeness: N/10` per option. Include the one-line note from step 4 of the preamble format rule instead: `Note: options differ in kind, not coverage — no completeness score.`
 
 **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY. If this section turned up zero findings, state "No issues, moving on" and proceed. If the section has findings, you MUST call AskUserQuestion as a tool_use — a finding with an "obvious fix" is still a finding and still needs user approval before any change lands in the plan. Do NOT proceed until the user responds.
-**Reminder: Do NOT make any code changes. Review only.**
 
 > **STOP.** Before running the 11-section deep review, required outputs, and review report (only after Step 0 scope and mode are agreed), Read `~/.claude/skills/gstack/plan-ceo-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
