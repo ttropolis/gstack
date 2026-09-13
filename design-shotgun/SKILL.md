@@ -1,5 +1,6 @@
 ---
 name: design-shotgun
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: "Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. (gstack)"

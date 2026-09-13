@@ -1,5 +1,6 @@
 ---
 name: design-html
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: "Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack)"

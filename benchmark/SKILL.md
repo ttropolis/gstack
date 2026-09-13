@@ -1,5 +1,6 @@
 ---
 name: benchmark
+disable-model-invocation: true
 preamble-tier: 1
 version: 1.0.0
 description: Performance regression detection. (gstack)

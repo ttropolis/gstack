@@ -1,5 +1,6 @@
 ---
 name: spec
+disable-model-invocation: true
 preamble-tier: 3
 version: 0.1.0
 description: Turn vague intent into a precise, executable spec in five phases. (gstack)

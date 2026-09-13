@@ -1,5 +1,6 @@
 ---
 name: plan-ceo-review
+disable-model-invocation: true
 preamble-tier: 3
 version: 1.0.0
 description: CEO/founder-mode plan review. (gstack)

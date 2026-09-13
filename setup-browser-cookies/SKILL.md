@@ -1,5 +1,6 @@
 ---
 name: setup-browser-cookies
+disable-model-invocation: true
 preamble-tier: 1
 version: 1.0.0
 description: Import cookies from your real Chromium browser into the headless browse session. (gstack)

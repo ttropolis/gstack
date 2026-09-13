@@ -1,5 +1,6 @@
 ---
 name: document-generate
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: Generate missing documentation from scratch for a feature, module, or entire project. (gstack)

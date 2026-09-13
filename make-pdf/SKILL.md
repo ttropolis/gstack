@@ -1,5 +1,6 @@
 ---
 name: make-pdf
+disable-model-invocation: true
 preamble-tier: 1
 version: 1.0.0
 description: Turn any markdown file into a publication-quality PDF. (gstack)

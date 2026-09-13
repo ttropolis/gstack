@@ -1,5 +1,6 @@
 ---
 name: devex-review
+disable-model-invocation: true
 preamble-tier: 3
 version: 1.0.0
 description: Live developer experience audit. (gstack)

@@ -1,5 +1,6 @@
 ---
 name: qa-only
+disable-model-invocation: true
 preamble-tier: 4
 version: 1.0.0
 description: Report browser/API/CLI/job/worker/webhook bugs. (gstack)

@@ -1,5 +1,6 @@
 ---
 name: ios-design-review
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: Visual design audit for iOS apps on real hardware. (gstack)

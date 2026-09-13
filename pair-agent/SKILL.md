@@ -1,5 +1,6 @@
 ---
 name: pair-agent
+disable-model-invocation: true
 preamble-tier: 2
 version: 0.1.0
 description: Pair a remote AI agent with your browser. (gstack)
