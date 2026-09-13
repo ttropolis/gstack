@@ -1,5 +1,6 @@
 ---
 name: setup-deploy
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: Configure deployment settings for /land-and-deploy.

@@ -1,5 +1,6 @@
 ---
 name: plan-devex-review
+disable-model-invocation: true
 preamble-tier: 3
 version: 2.0.0
 description: Interactive developer experience plan review. (gstack)

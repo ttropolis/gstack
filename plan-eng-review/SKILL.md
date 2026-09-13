@@ -1,5 +1,6 @@
 ---
 name: plan-eng-review
+disable-model-invocation: true
 preamble-tier: 3
 version: 1.0.0
 description: Eng manager-mode plan review. (gstack)

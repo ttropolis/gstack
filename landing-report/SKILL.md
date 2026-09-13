@@ -1,5 +1,6 @@
 ---
 name: landing-report
+disable-model-invocation: true
 preamble-tier: 2
 version: 0.1.0
 description: Read-only queue dashboard for workspace-aware ship. (gstack)

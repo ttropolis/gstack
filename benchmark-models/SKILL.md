@@ -1,5 +1,6 @@
 ---
 name: benchmark-models
+disable-model-invocation: true
 preamble-tier: 1
 version: 1.0.0
 description: Cross-model benchmark for gstack skills. (gstack)

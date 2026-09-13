@@ -1,5 +1,6 @@
 ---
 name: skillify
+disable-model-invocation: true
 preamble-tier: 2
 version: 1.0.0
 description: Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack)
