@@ -1,5 +1,6 @@
 ---
 name: cso
+disable-model-invocation: true
 version: 3.0.0
 description: "Security audit: supported static findings; qualified profiles add reproduction and repair candidates. (gstack)"
 allowed-tools:
