@@ -71,7 +71,7 @@ On any ${outsideVoiceFor(ctx).label} error, fall back to the ${outsideVoiceFor(c
 
 **If preflight is not ready (or ${outsideVoiceFor(ctx).label} errored):**
 
-Dispatch via the Agent tool with ${FOREGROUND_IF_AVAILABLE} (subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}; the findings must land before the workflow continues). ${BACKGROUND_RECOVERY} The subagent has fresh context and no conversation bias — but it is the same harness; model identity stays unknown unless the runtime reports it; weigh its agreement accordingly.
+Dispatch via the Agent tool with \`model: "opus"\` (P1 gate judgment) and ${FOREGROUND_IF_AVAILABLE} (subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}; the findings must land before the workflow continues). ${BACKGROUND_RECOVERY} The subagent has fresh context and no conversation bias — but it is the same harness; model identity stays unknown unless the runtime reports it; weigh its agreement accordingly.
 
 Subagent prompt: same mode-appropriate prompt as above (Startup or Builder variant).
 
@@ -735,7 +735,7 @@ On \`CODEX_MODE: ${outsideVoiceFor(ctx).id === 'codex' ? 'under_codex' : 'under_
 \`outside_status: unavailable\`, run no outside CLI, and use the native subagent below.
 A native result never supplies outside coverage.
 
-Dispatch via the Agent tool with the same prompt, passing ${FOREGROUND_IF_AVAILABLE} (subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}). ${BACKGROUND_RECOVERY} Bound it at a 5-minute timeout; if it never completes, treat the review as unavailable and continue.
+Dispatch via the Agent tool with \`model: "opus"\` (P1 gate judgment) and the same prompt, passing ${FOREGROUND_IF_AVAILABLE} (subagents default to background since ${CC_BACKGROUND_DEFAULT_SINCE}). ${BACKGROUND_RECOVERY} Bound it at a 5-minute timeout; if it never completes, treat the review as unavailable and continue.
 Present findings under \`DOCUMENTATION REVIEW (${outsideVoiceFor(ctx).nativeLabel} subagent):\`. If it fails: "Doc review unavailable. Continuing to Step 9." Skip the apply gate, persist \`status: unavailable\`, \`outside_status: unavailable\`, and \`source: none\` below, then continue; unavailable is not a clean review.
 
 **Apply decision (informational, never auto-edit, but findings don't evaporate).**
