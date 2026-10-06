@@ -8,7 +8,7 @@ Complete this section in order:
 3. Run Step 8.2 Scope Drift.
 4. Run Prior Learnings, including its setting question when offered, then proceed to Step 9 for review and QA.
 
-**Dispatch this step as a subagent** using Agent, `subagent_type: "general-purpose"`
+**Dispatch this step as a subagent** using Agent, `subagent_type: "general-purpose"`, `model: "sonnet"` (mechanical summarization/checking),
 and `run_in_background: false`. Use Step 7's shared foreground-dispatch rule.
 The child reads the plan and every referenced
 code file; the parent validates its report and applies the gates below.
