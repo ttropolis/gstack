@@ -114,6 +114,7 @@ Past learnings: {learnings or 'none'}"
 
 **Subagent configuration:**
 - Use `subagent_type: "general-purpose"`
+- Use `model: "sonnet"` (mechanical specialist checklist pass)
 - Pass `run_in_background: false` on every specialist Agent call — background is the default since Claude Code v2.1.198; omitting the flag is not foreground.
 
 **Wait for readers before editing:**
@@ -236,7 +237,7 @@ completion. Advice never permits edits while readers are active or replaces a re
 
 **Activation:** Only if DIFF_LINES > 200 OR any specialist produced a CRITICAL finding.
 
-If activated, dispatch one more subagent via the Agent tool (pass `run_in_background: false` — foreground; subagents default to background since Claude Code v2.1.198).
+If activated, dispatch one more subagent via the Agent tool with `model: "opus"` (adversarial judgment) (pass `run_in_background: false` — foreground; subagents default to background since Claude Code v2.1.198).
 
 The Red Team subagent receives:
 1. The red-team checklist path `~/.claude/skills/gstack/review/specialists/red-team.md` (it reads the file)

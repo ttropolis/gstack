@@ -16,7 +16,7 @@ bun "<SNAPSHOT_TOOL>" create design "<ACTIVE_PLAN>" "<RESTORE_PATH>" "<methodolo
   Fresh `Implementation plan` only; excludes `Review record`.
 
   **Claude design subagent** (native tool):
-  Claude Code: set Agent `run_in_background: false` if its schema exposes it.
+  Claude Code: set Agent `model: "opus"` (design judgment) and `run_in_background: false` if its schema exposes it.
   Other hosts: foreground; await completion when supported.
 
   Read `snapshot.json` beside `<DESIGN_INPUT>`. Send its `nativeDispatchPrompt`

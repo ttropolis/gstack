@@ -246,10 +246,6 @@ the skill wins. Treat these as preferences, not rules.
 complete individually as you finish it. Do not batch-complete at the end. If a task
 turns out to be unnecessary, mark it skipped with a one-line reason.
 
-**Think before heavy actions.** For complex operations (refactors, migrations,
-non-trivial new features), briefly state your approach before executing. This lets
-the user course-correct cheaply instead of mid-flight.
-
 **Dedicated tools over Bash.** Prefer the host's dedicated file tools (Read, Edit,
 Write, and its search tools when it has them) over shell equivalents (cat, sed,
 find, grep). The dedicated tools are cheaper and clearer.
@@ -862,7 +858,7 @@ On any Codex error, fall back to the Claude subagent below.
 
 **If preflight is not ready (or Codex errored):**
 
-Dispatch via the Agent tool with `run_in_background: false` (subagents default to background since Claude Code v2.1.198; the findings must land before the workflow continues). The subagent has fresh context and no conversation bias — but it is the same harness; model identity stays unknown unless the runtime reports it; weigh its agreement accordingly.
+Dispatch via the Agent tool with `model: "opus"` (P1 gate judgment) and `run_in_background: false` (subagents default to background since Claude Code v2.1.198; the findings must land before the workflow continues). The subagent has fresh context and no conversation bias — but it is the same harness; model identity stays unknown unless the runtime reports it; weigh its agreement accordingly.
 
 Subagent prompt: same mode-appropriate prompt as above (Startup or Builder variant).
 

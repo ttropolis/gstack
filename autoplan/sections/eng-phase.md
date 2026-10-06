@@ -13,7 +13,7 @@ bun "<SNAPSHOT_TOOL>" create eng "<ACTIVE_PLAN>" "<RESTORE_PATH>" "<methodologyP
   Fresh `Implementation plan` only; excludes `Review record`.
 
   **Claude eng subagent** (native tool):
-  Claude Code: set Agent `run_in_background: false` if its schema exposes it.
+  Claude Code: set Agent `model: "opus"` (architecture judgment) and `run_in_background: false` if its schema exposes it.
   Other hosts: foreground; await completion when supported.
 
   Read `snapshot.json` beside `<ENG_INPUT>`. Send its `nativeDispatchPrompt`
