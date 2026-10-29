@@ -179,11 +179,13 @@ describe('CSO build and distribution wiring', () => {
   test.skipIf(process.platform !== 'linux')('publisher lock rejects a competing OS lock without mutating the installed bundle',async()=>{
     const dir=buildFixture(),ready=join(dir,'lock.ready'),release=join(dir,'lock.release');seedBundle(dir);const before=bundleContents(dir);
     const holder=Bun.spawn(['/usr/bin/flock','-n',join(dir,'bin'),'/bin/sh','-c',`: > ${quote(ready)}; while [ ! -f ${quote(release)} ]; do sleep .01; done`],{stdout:'pipe',stderr:'pipe'});
+    try{
     const deadline=Date.now()+3000;while(!existsSync(ready)&&Date.now()<deadline)await Bun.sleep(10);
     expect(existsSync(ready)).toBe(true);
     expect(fakeBuild(dir).status).toBe(73);
     expect(bundleContents(dir)).toEqual(before);
     writeFileSync(release,'go');expect(await holder.exited).toBe(0);
+    }finally{holder.kill('SIGKILL');} // a failed expect must not orphan the lock holder
   });
 
   test.skipIf(process.platform === 'win32')('an ownerless legacy mkdir lock cannot block publication',()=>{

@@ -11,9 +11,30 @@ function temporary(){const dir=mkdtempSync(join(tmpdir(),'cso-generation-'));tem
 function digest(path:string){return createHash('sha256').update(readFileSync(path)).digest('hex');}
 function compileC(source:string,output:string,args:string[]=[]){const result=spawnSync('/usr/bin/cc',['-std=c11','-D_POSIX_C_SOURCE=200809L','-O2',...args,source,'-o',output],{encoding:'utf8',timeout:30_000});expect(result.status,result.stderr).toBe(0);chmodSync(output,0o755);}
 function compileLauncher(directory:string,coreDigest:string,testing=false){const output=join(directory,'gstack-cso-launcher'),args=[`-DGSTACK_CSO_CORE_SHA256=\"${coreDigest}\"`,...(testing?['-DGSTACK_CSO_TESTING']:[])];compileC(join(ROOT,'lib/cso/launcher.c'),output,args);return output;}
+// A detached test child that waits for a release file must also stop when its
+// temp dir is gone or after ~60 s; otherwise a failed test, a timeout or
+// afterEach cleanup orphans it forever (seen alive for 1 d 18 h at ppid 1).
+// The ready file holds the child's pid so a test can prove it is still alive.
+function childWaitScript(ready:string,release:string,dir:string,polls=1200){const q=(s:string)=>`'${s.replaceAll("'","'\\''")}'`;return `echo $$ > ${q(ready)}; i=0; while [ ! -f ${q(release)} ] && [ -d ${q(dir)} ] && [ $i -lt ${polls} ]; do sleep .05; i=$((i+1)); done`;}
 async function waitFor(path:string){const deadline=Date.now()+5000;while(!existsSync(path)&&Date.now()<deadline)await Bun.sleep(10);expect(existsSync(path)).toBe(true);}
 
 describe.skipIf(process.platform==='win32')('CSO native generation handoff',()=>{
+  test('a detached waiting child exits once its temp dir is removed (no orphan after a failed test)',async()=>{
+    const directory=temporary(),ready=join(directory,'ready');
+    const child=Bun.spawn(['/bin/sh','-c',childWaitScript(ready,join(directory,'never-written'),directory)],{stdin:'ignore',stdout:'ignore',stderr:'ignore'});
+    try{
+      await waitFor(ready);rmSync(directory,{recursive:true,force:true});
+      expect(await Promise.race([child.exited.then(()=>true),Bun.sleep(3000).then(()=>false)])).toBe(true);
+    }finally{child.kill('SIGKILL');}
+  },10_000);
+
+  test('a detached waiting child gives up after its poll cap even when nothing releases it',async()=>{
+    const directory=temporary(),ready=join(directory,'ready');
+    const child=Bun.spawn(['/bin/sh','-c',childWaitScript(ready,join(directory,'never-written'),directory,5)],{stdin:'ignore',stdout:'ignore',stderr:'ignore'});
+    try{expect(await Promise.race([child.exited.then(()=>true),Bun.sleep(3000).then(()=>false)])).toBe(true);}
+    finally{child.kill('SIGKILL');}
+  },10_000);
+
   test('the launcher rejects changed core bytes even when the generation manifest is unchanged',()=>{
     const directory=temporary(),core=join(directory,'gstack-cso-core'),source=join(directory,'core.c');
     writeFileSync(source,'#include <stdio.h>\nint main(void){puts("OLD");return 0;}\n');compileC(source,core);const expected=digest(core),launcher=compileLauncher(directory,expected);writeFileSync(join(directory,'.gstack-cso-generation'),`${expected}\n`);
@@ -45,9 +66,18 @@ describe.skipIf(process.platform==='win32')('CSO native generation handoff',()=>
 
   test('Bun retains the shared generation lock while the core runs and drops it before detached children',async()=>{
     const directory=temporary(),source=join(directory,'core.ts'),core=join(directory,'gstack-cso-core'),launcher=join(directory,'gstack-cso-launcher'),locker=join(directory,'gstack-cso-publish-lock'),ready=join(directory,'ready'),release=join(directory,'release'),childReady=join(directory,'child-ready'),childRelease=join(directory,'child-release'),published=join(directory,'published');
-    writeFileSync(source,`import{fstatSync,writeFileSync,existsSync}from'node:fs';const fd=Number(process.env.GSTACK_CSO_GENERATION_LOCK_FD);if(!Number.isInteger(fd)||!fstatSync(fd).isDirectory())process.exit(71);writeFileSync(${JSON.stringify(ready)},'ready');while(!existsSync(${JSON.stringify(release)}))await Bun.sleep(5);const child=Bun.spawn(['/bin/sh','-c',${JSON.stringify(`touch '${childReady}'; while [ ! -f '${childRelease}' ]; do sleep .01; done`)}],{stdin:'ignore',stdout:'ignore',stderr:'ignore'});child.unref();`);
+    writeFileSync(source,`import{fstatSync,writeFileSync,existsSync}from'node:fs';const fd=Number(process.env.GSTACK_CSO_GENERATION_LOCK_FD);if(!Number.isInteger(fd)||!fstatSync(fd).isDirectory())process.exit(71);writeFileSync(${JSON.stringify(ready)},'ready');while(!existsSync(${JSON.stringify(release)}))await Bun.sleep(5);const child=Bun.spawn(['/bin/sh','-c',${JSON.stringify(childWaitScript(childReady,childRelease,directory))}],{stdin:'ignore',stdout:'ignore',stderr:'ignore'});child.unref();`);
     const built=spawnSync(process.execPath,['build','--compile','--no-compile-autoload-dotenv','--no-compile-autoload-bunfig','--no-compile-autoload-tsconfig','--no-compile-autoload-package-json',source,'--outfile',core],{encoding:'utf8',timeout:60_000});expect(built.status,built.stderr).toBe(0);const coreDigest=digest(core);compileLauncher(directory,coreDigest);writeFileSync(join(directory,'.gstack-cso-generation'),`${coreDigest}\n`);compileC(join(ROOT,'lib/cso/publish-lock.c'),locker);
-    const running=Bun.spawn([launcher],{cwd:directory,stdout:'pipe',stderr:'pipe'});await waitFor(ready);const blocked=spawnSync(locker,[directory,'/bin/sh','-c',`touch '${published}'`],{encoding:'utf8',timeout:5000});expect(blocked.status).toBe(73);expect(existsSync(published)).toBe(false);
-    writeFileSync(release,'go');expect(await running.exited).toBe(0);await waitFor(childReady);const admitted=spawnSync(locker,[directory,'/bin/sh','-c',`touch '${published}'`],{encoding:'utf8',timeout:5000});expect(admitted.status,admitted.stderr).toBe(0);expect(existsSync(published)).toBe(true);writeFileSync(childRelease,'go');
+    const running=Bun.spawn([launcher],{cwd:directory,stdout:'pipe',stderr:'pipe'});
+    try{
+    await waitFor(ready);const blocked=spawnSync(locker,[directory,'/bin/sh','-c',`touch '${published}'`],{encoding:'utf8',timeout:5000});expect(blocked.status).toBe(73);expect(existsSync(published)).toBe(false);
+    writeFileSync(release,'go');expect(await running.exited).toBe(0);await waitFor(childReady);const admitted=spawnSync(locker,[directory,'/bin/sh','-c',`touch '${published}'`],{encoding:'utf8',timeout:5000});expect(admitted.status,admitted.stderr).toBe(0);expect(existsSync(published)).toBe(true);
+    // The lock was dropped while the detached child still ran, not because it had exited.
+    const childPid=Number(readFileSync(childReady,'utf8').trim());expect(()=>process.kill(childPid,0)).not.toThrow();
+    }finally{
+      // A failed expect must not orphan the core (it polls for release) or the child.
+      if(existsSync(directory)){writeFileSync(release,'go');writeFileSync(childRelease,'go');}
+      running.kill('SIGKILL');
+    }
   },70_000);
 });

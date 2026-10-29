@@ -367,6 +367,8 @@ describe('journal and injected failures', () => {
     let out = ''; let err = '';
     child.stdout.on('data', (d) => { out += d; });
     child.stderr.on('data', (d) => { err += d; });
+    // A failed wait or expect must not leave the release tool polling for $GSTACK_TEST_GO.
+    try {
     const deadline = Date.now() + 20_000;
     while (!fs.existsSync(path.join(repo.work, 'generated', 'digest.md')) || repo.git('worktree', 'list').split('\n').length < 2) {
       if (Date.now() > deadline) throw new Error('staging worktree never appeared');
@@ -381,6 +383,10 @@ describe('journal and injected failures', () => {
     expect(readFile(repo, 'VERSION')).toBe('1.2.3.0\n');
     expect(readFile(repo, 'docs/pr-a.md')).toContain('edited meanwhile');
     expect(repo.git('worktree', 'list').split('\n')).toHaveLength(1);
+    } finally {
+      fs.writeFileSync(go, '1');
+      child.kill('SIGKILL');
+    }
   }, 30_000);
 });
 
